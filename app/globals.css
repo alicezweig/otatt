@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  --spacing: 0.5rem;
+  --border-radius: 1rem;
+  --input-padding: 0.5rem 1rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  width: 100dvw;
+  height: 100dvh;
+}
+
+@layer components {
+  .inputWrapper {
+    @apply flex p-(--input-padding) gap-1 h-10;
+    @apply rounded-(--border-radius) border-zinc-700 border-[1px] bg-zinc-800;
+    @apply focus-within:text-zinc-900 not-focus:text-zinc-200;
+    @apply focus-within:bg-amber-500;
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .innerWrapper {
+    @apply flex flex-row;
+  }
+
+  .input {
+    @apply border-none focus:border-none focus:outline-none;
+    @apply w-full;
+    @apply text-3xl;
+  }
+
+  .label {
+    @apply text-zinc-200 text-sm font-bold;
+    @apply group-data-[focus=true]:text-zinc-900;
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .stepperWrapper {
+    @apply flex flex-row items-center justify-between;
+  }
+
+  .baseNumberInput {
+    @apply w-full lg:w-30;
+  }
+}
+
+@layer utilities {
+  .baseNumberInput {
+    @apply w-full lg:w-30;
+  }
+}
