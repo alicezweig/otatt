@@ -1,5 +1,7 @@
 @import "tailwindcss";
-
+@plugin './hero.ts';
+@source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@custom-variant dark (&:is(.dark *));
 
 :root {
   --background: #ffffff;
@@ -24,6 +26,11 @@
   }
 }
 
+[data-overlay-container=true] {
+  height: 100%;
+  width: 100%;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -32,42 +39,22 @@ body {
   height: 100dvh;
 }
 
-@layer components {
+@layer utilities {
+  .baseNumberInput {
+    @apply w-full lg:w-30;
+  }
+
   .inputWrapper {
-    @apply flex p-(--input-padding) gap-1 h-10;
-    @apply rounded-(--border-radius) border-zinc-700 border-[1px] bg-zinc-800;
     @apply focus-within:text-zinc-900 not-focus:text-zinc-200;
     @apply focus-within:bg-amber-500;
     @apply transition-all duration-200 ease-in-out;
   }
 
-  .innerWrapper {
-    @apply flex flex-row;
+  .label {
+    @apply text-2xl;
   }
 
   .input {
-    @apply border-none focus:border-none focus:outline-none;
-    @apply w-full;
     @apply text-3xl;
-  }
-
-  .label {
-    @apply text-zinc-200 text-sm font-bold;
-    @apply group-data-[focus=true]:text-zinc-900;
-    @apply transition-all duration-200 ease-in-out;
-  }
-
-  .stepperWrapper {
-    @apply flex flex-row items-center justify-between;
-  }
-
-  .baseNumberInput {
-    @apply w-full lg:w-30;
-  }
-}
-
-@layer utilities {
-  .baseNumberInput {
-    @apply w-full lg:w-30;
   }
 }
