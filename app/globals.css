@@ -4,9 +4,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-
   --spacing: 0.5rem;
   --border-radius: 1rem;
   --input-padding: 0.5rem 1rem;
@@ -21,12 +18,12 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #1d1d1d;
     --foreground: #ededed;
   }
 }
 
-[data-overlay-container=true] {
+[data-overlay-container="true"] {
   height: 100%;
   width: 100%;
 }
@@ -39,6 +36,8 @@ body {
   height: 100dvh;
 }
 
+
+/* TODO how to import styles from other files across the project */
 @layer utilities {
   .baseNumberInput {
     @apply w-full lg:w-30;
@@ -56,5 +55,13 @@ body {
 
   .input {
     @apply text-3xl;
+  }
+
+  .buttonGreen {
+    @apply bg-green-700 hover:bg-green-500;
+  }
+
+  .buttonRed {
+    @apply bg-red-900 hover:bg-red-800;
   }
 }

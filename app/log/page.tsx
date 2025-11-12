@@ -1,17 +1,18 @@
+"use client"
+
 import { Suspense } from "react"
-import { server } from "../index"
+import { trpc } from "@/app/trpc"
 import Log from "./Log"
 
-export default async function GetLogEntries() {
-  // const logEntries = await server.getTaskList.query()
-  
-  const logEntriesPromise = server.getTaskList.query()
-  
+export default function GetLogEntries() {
+  const logEntries = trpc.getTaskList.useQuery()
+
   return (
     <div>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Log logPromise={logEntriesPromise} />
-      </Suspense>
+      {/* <Suspense fallback={<div>Loading...</div>}> */}
+        {/* <Log logEntries={logEntries} /> */}
+      {/* </Suspense> */}
+      {logEntries.data?.map(entry => <div>{entry}</div>)}
     </div>
   )
 }
