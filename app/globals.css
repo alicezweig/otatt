@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin './hero.ts';
 @source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+/* TODO  */
+/* @source "../../node_modules/@heroui/dist/**.js"; */
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -37,7 +39,7 @@ body {
 }
 
 
-/* TODO how to import styles from other files across the project */
+/* TODO how to import styles from other files across the project (google it)*/
 @layer utilities {
   .baseNumberInput {
     @apply w-full lg:w-30;
