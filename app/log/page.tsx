@@ -1,18 +1,25 @@
-"use client"
-
+import { HydrateClient, trpc } from "@/trpc/server"
+import { Link } from "@heroui/link"
 import { Suspense } from "react"
-import { trpc } from "@/app/trpc"
 import Log from "./Log"
 
 export default function GetLogEntries() {
-  const logEntries = trpc.getTaskList.useQuery()
+  void trpc.getTaskList.prefetch()
+
+  // TODO error boundary
 
   return (
-    <div>
-      {/* <Suspense fallback={<div>Loading...</div>}> */}
-        {/* <Log logEntries={logEntries} /> */}
-      {/* </Suspense> */}
-      {logEntries.data?.map(entry => <div>{entry}</div>)}
-    </div>
+    <HydrateClient>
+      <div className="flex flex-col size-full p-1 md:p-3 gap-3">
+        <div className="">
+          <Link href="/" className="text-white text-2xl" underline="hover">
+            Home
+          </Link>
+        </div>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Log />
+        </Suspense>
+      </div>
+    </HydrateClient>
   )
 }

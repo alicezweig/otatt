@@ -2,10 +2,14 @@ import { initTRPC } from "@trpc/server"
 import { z } from "zod"
 import { getTasks } from "../queries/tasks"
 
-export const t = initTRPC.create()
 
+export const t = initTRPC.create()
+export const createTRPCContext = async () => {
+  return {}
+}
 const publicProcedure = t.procedure
-const { createCallerFactory, router } = t
+export const createCallerFactory = t.createCallerFactory
+const router = t.router
 
 const taskSchema = z.object({
   id: z.number().int(),
