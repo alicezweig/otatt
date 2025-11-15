@@ -2,8 +2,6 @@
 
 import { trpc } from "@/trpc/client"
 
-// TODO connect drizzle schema top trpc zod to here
-
 export default function Log() {
   const [logEntries] = trpc.getTaskList.useSuspenseQuery()
   

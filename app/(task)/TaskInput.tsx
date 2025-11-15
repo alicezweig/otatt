@@ -1,17 +1,15 @@
+import { secondsToTime, timeToSeconds } from "@/src/utils/math"
+import { trpc } from "@/trpc/client"
 import { Button } from "@heroui/button"
 import { Input } from "@heroui/input"
 import { NumberInput } from "@heroui/number-input"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+
+const tickInterval = 200
 
 interface TaskInputProps {
   working: boolean
   setWorking: (working: boolean) => void
-}
-
-interface Countdown {
-  hours: number
-  minutes: number
-  seconds: number
 }
 
 export function TaskInput(props: TaskInputProps) {
@@ -23,33 +21,27 @@ export function TaskInput(props: TaskInputProps) {
     task: false,
     time: false
   })
-  const [countdown, setCountdown] = useState<Countdown>({
-    hours: 0,
-    minutes: 0,
-    seconds: 59
-  })
+  const [tick, setTick] = useState<number>(0)
+  const taskWrittenRef = useRef(false)
+  const mutation = trpc.writeTask.useMutation()
 
   useEffect(() => {
+    if (!working || tick === 0) return
+
     const interval = setInterval(() => {
-      setCountdown(prev => {
-        let { hours, minutes, seconds } = prev
-        if (seconds > 0) seconds--
-        else if (minutes > 0) {
-          minutes--
-          seconds = 59
-        } else if (hours > 0) {
-          hours--
-          minutes = 59
-          seconds = 59
-        } else {
-          clearInterval(interval)
-        }
-        return { hours, minutes, seconds }
-      })
-    }, 1000)
+      if (tick === 0) return
+      setTick(prev => prev - 1)
+    }, tickInterval)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [hours, minutes, mutation, task, tick, working])
+
+  useEffect(() => {
+    if (working && tick === 0 && !taskWrittenRef.current) {
+      mutation.mutate({ task, hours, minutes })
+      taskWrittenRef.current = true
+    }
+  }, [hours, minutes, mutation, task, tick, working])
 
   function onStart() {
     if (task.length === 0) {
@@ -57,9 +49,15 @@ export function TaskInput(props: TaskInputProps) {
     } else if (hours === 0 && minutes === 0) {
       setFormErrors(prev => ({ ...prev, time: true }))
     } else {
-      setCountdown(prev => ({ ...prev, hours, minutes }))
-      setWorking(!working)
+      setTick(timeToSeconds(hours, minutes) - 1)
+      setWorking(true)
     }
+  }
+
+  function onStop() {
+    setWorking(false)
+    setTick(0)
+    taskWrittenRef.current = false
   }
 
   function onTaskInputChange(value: string) {
@@ -75,6 +73,11 @@ export function TaskInput(props: TaskInputProps) {
   function onMinutesInputChange(value: number) {
     setMinutes(value)
     setFormErrors(prev => ({ ...prev, time: false }))
+  }
+
+  function countdown(tick: number) {
+    const { hours, minutes, seconds } = secondsToTime(tick)
+    return `${hours} : ${minutes} : ${seconds}`
   }
 
   return (
@@ -127,17 +130,13 @@ export function TaskInput(props: TaskInputProps) {
             />
           </>
         )}
-        {working && (
-          <p className="text-4xl text-white">
-            {countdown.hours} : {countdown.minutes} : {countdown.seconds}
-          </p>
-        )}
+        {working && <p className="text-4xl text-white">{countdown(tick)}</p>}
       </div>
       <Button
         size="md"
         variant="solid"
         color="default"
-        onPress={() => onStart()}
+        onPress={() => (working ? onStop() : onStart())}
         className={`basis-10 ${working ? "buttonRed" : "buttonGreen"}`}
       >
         <p className="label">{working ? "Stop" : "Start"}</p>

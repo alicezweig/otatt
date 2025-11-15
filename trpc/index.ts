@@ -1,7 +1,7 @@
+import { taskSchema, taskSchemaIn } from "@/src/schemas/task"
 import { initTRPC } from "@trpc/server"
 import { z } from "zod"
-import { getTasks } from "../queries/tasks"
-
+import { getTasks, writeTask } from "../src/queries/tasks"
 
 export const t = initTRPC.create()
 export const createTRPCContext = async () => {
@@ -11,14 +11,7 @@ const publicProcedure = t.procedure
 export const createCallerFactory = t.createCallerFactory
 const router = t.router
 
-const taskSchema = z.object({
-  id: z.number().int(),
-  task: z.string().min(1),
-  hours: z.number().int().min(0),
-  minutes: z.number().int().min(0).max(59)
-})
-export type Task = z.infer<typeof taskSchema>
-
+// TODO splitting router by modules
 export const appRouter = router({
   getTaskList: publicProcedure
     .input(z.void())
@@ -26,7 +19,10 @@ export const appRouter = router({
     .query(async () => {
       const tasks = await getTasks()
       return tasks
-    })
+    }),
+  writeTask: publicProcedure.input(taskSchemaIn).mutation(async ({ input }) => {
+    await writeTask(input)
+  })
 })
 
 export type AppRouter = typeof appRouter

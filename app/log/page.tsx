@@ -2,11 +2,10 @@ import { HydrateClient, trpc } from "@/trpc/server"
 import { Link } from "@heroui/link"
 import { Suspense } from "react"
 import Log from "./Log"
+import { ErrorBoundary } from "react-error-boundary"
 
 export default function GetLogEntries() {
   void trpc.getTaskList.prefetch()
-
-  // TODO error boundary
 
   return (
     <HydrateClient>
@@ -16,9 +15,11 @@ export default function GetLogEntries() {
             Home
           </Link>
         </div>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Log />
-        </Suspense>
+        <ErrorBoundary fallback={<div>Error loading log</div>}>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Log />
+          </Suspense>
+        </ErrorBoundary>
       </div>
     </HydrateClient>
   )
