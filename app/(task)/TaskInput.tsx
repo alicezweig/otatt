@@ -1,8 +1,10 @@
+"use client"
 import { secondsToTime, timeToSeconds } from "@/src/utils/math"
 import { trpc } from "@/trpc/client"
 import { Button } from "@heroui/button"
 import { Input } from "@heroui/input"
 import { NumberInput } from "@heroui/number-input"
+import { useSession } from "next-auth/react"
 import { useEffect, useRef, useState } from "react"
 
 const tickInterval = 200
@@ -14,6 +16,7 @@ interface TaskInputProps {
 
 export function TaskInput(props: TaskInputProps) {
   const { working, setWorking } = props
+  const { data: session } = useSession()
   const [task, setTask] = useState("")
   const [hours, setHours] = useState(0)
   const [minutes, setMinutes] = useState(0)
@@ -23,7 +26,7 @@ export function TaskInput(props: TaskInputProps) {
   })
   const [tick, setTick] = useState<number>(0)
   const taskWrittenRef = useRef(false)
-  const mutation = trpc.writeTask.useMutation()
+  const writeTaskToLog = trpc.writeTask.useMutation()
 
   useEffect(() => {
     if (!working || tick === 0) return
@@ -34,14 +37,14 @@ export function TaskInput(props: TaskInputProps) {
     }, tickInterval)
 
     return () => clearInterval(interval)
-  }, [hours, minutes, mutation, task, tick, working])
+  }, [hours, minutes, writeTaskToLog, task, tick, working])
 
   useEffect(() => {
-    if (working && tick === 0 && !taskWrittenRef.current) {
-      mutation.mutate({ task, hours, minutes })
+    if (session && working && tick === 0 && !taskWrittenRef.current) {
+      writeTaskToLog.mutate({ task, hours, minutes, userId: session?.user.id })
       taskWrittenRef.current = true
     }
-  }, [hours, minutes, mutation, task, tick, working])
+  }, [hours, minutes, writeTaskToLog, task, tick, working, session])
 
   function onStart() {
     if (task.length === 0) {

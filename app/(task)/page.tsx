@@ -1,5 +1,3 @@
-import { auth } from "@/auth"
-import { redirect } from "next/navigation"
 import { Task } from "./Task"
 
 export default async function Page() {

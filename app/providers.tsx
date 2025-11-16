@@ -3,6 +3,7 @@ import { getQueryClient, getUrl, trpc } from "@/trpc/client"
 import { HeroUIProvider } from "@heroui/react"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { httpBatchLink } from "@trpc/react-query"
+import { SessionProvider } from "next-auth/react"
 import { useState } from "react"
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -20,10 +21,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   )
 
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <HeroUIProvider>{children}</HeroUIProvider>
-      </QueryClientProvider>
-    </trpc.Provider>
+    <SessionProvider>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <HeroUIProvider>{children}</HeroUIProvider>
+        </QueryClientProvider>
+      </trpc.Provider>
+    </SessionProvider>
   )
 }
