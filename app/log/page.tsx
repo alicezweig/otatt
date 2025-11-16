@@ -1,10 +1,16 @@
+import { auth } from "@/auth"
 import { HydrateClient, trpc } from "@/trpc/server"
 import { Link } from "@heroui/link"
+import { redirect } from "next/navigation"
 import { Suspense } from "react"
-import Log from "./Log"
 import { ErrorBoundary } from "react-error-boundary"
+import Log from "./Log"
 
-export default function GetLogEntries() {
+export default async function GetLogEntries() {
+  const session = await auth()
+  if (!session?.user) {
+    redirect("/signin")
+  }
   void trpc.getTaskList.prefetch()
 
   return (
